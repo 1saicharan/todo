@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 data class Task constructor(
     val taskId: Int = 0,
-    val title: String,
+    val title: String = "",
     val description: String = "",
 //    val dueDate: LocalDate ,
     val isCompleted: Boolean = false,
