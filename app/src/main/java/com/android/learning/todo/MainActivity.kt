@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -22,7 +22,6 @@ import com.android.learning.todo.ui.screens.HomeScreen
 import com.android.learning.todo.ui.screens.LoginScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
 import com.android.learning.todo.ui.theme.TodoTheme
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -37,9 +36,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppNavigation(userDao = userDao,taskDao = taskDao)
+                Scaffold() { innerPadding ->
+                    Column ( modifier = Modifier.fillMaxSize()
+                        .padding(paddingValues = innerPadding)
+                    ){
+                        AppNavigation(userDao = userDao,taskDao = taskDao)
+                    }
+
                 }
+
             }
         }
     }
@@ -58,6 +63,6 @@ fun AppNavigation(userDao: UserDao,taskDao: TaskDao){
 
 private fun getListOfTasks(taskDao: TaskDao): List<Task> {
     return runBlocking(Dispatchers.IO) {
-        taskDao.getTasks().map { it.toTask() }
+        taskDao.getTasks()?.map { it.toTask() } ?: emptyList()
     }
 }

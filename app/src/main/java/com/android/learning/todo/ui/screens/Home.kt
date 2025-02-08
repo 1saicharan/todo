@@ -14,6 +14,7 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -45,8 +47,9 @@ fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList
                 modifier = Modifier.padding(5.dp),
             )
             Button(onClick = { if(description.isNotBlank()){
-                runBlocking {  CoroutineScope(Dispatchers.IO).launch {
+                runBlocking {  withContext(Dispatchers.IO) {
                     taskDao.insertTask(Task(description = description).toTaskEntity())
+                    listOfItems = listOfItems + Task(description = description)
                 }}
                 description = ""
             } }, modifier = Modifier.padding(5.dp),) {
