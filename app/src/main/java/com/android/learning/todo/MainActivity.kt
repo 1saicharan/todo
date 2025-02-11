@@ -18,6 +18,7 @@ import com.android.learning.todo.data.room.TaskDao
 import com.android.learning.todo.data.room.TodoDatabase
 import com.android.learning.todo.data.room.UserDao
 import com.android.learning.todo.data.toTask
+import com.android.learning.todo.ui.screens.CalenderScreen
 import com.android.learning.todo.ui.screens.HomeScreen
 import com.android.learning.todo.ui.screens.LoginScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
@@ -57,7 +58,8 @@ fun AppNavigation(userDao: UserDao,taskDao: TaskDao){
 
         composable("login") { LoginScreen(userDao = userDao, navController = navController  ) }
         composable(route = "signup") { SignUpScreen(userDao = userDao, navController = navController) }
-        composable(route = "home") { HomeScreen(taskDao = taskDao, listOfItems = getListOfTasks(taskDao)) }
+        composable(route = "home") { HomeScreen(taskDao = taskDao, listOfItems = getListOfTasks(taskDao),navController = navController) }
+        composable(route = "datepicker") { CalenderScreen() }
     }
 }
 

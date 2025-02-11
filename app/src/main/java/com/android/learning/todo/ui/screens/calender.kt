@@ -2,14 +2,42 @@ package com.android.learning.todo.ui.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
-import java.time.LocalDate
+import androidx.compose.ui.unit.dp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalenderScreen() {
+    val datePickerState = rememberDatePickerState()
+    val selectedDate = datePickerState.selectedDateMillis?.let {
+        convertMillisToDate(it)
+    } ?: ""
+    Box(modifier = Modifier.fillMaxWidth().offset(y = 64.dp)
+        .shadow(elevation = 4.dp)
+        .background(MaterialTheme.colorScheme.surface)
+        .padding(16.dp)) {
+        DatePicker(
+
+            state = datePickerState,
+            showModeToggle = true
+        )
+
+    }
 
 }
 
@@ -17,13 +45,10 @@ fun CalenderScreen() {
 @Preview(showBackground = true)
 @Composable
 fun DateButtonPreview(){
-    DateButton(date = LocalDate.now())
+    CalenderScreen()
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun DateButton(date:LocalDate = LocalDate.now()){
-    OutlinedButton(onClick = {}) {
-        Text(text = date.dayOfMonth.toString())
-    }
+fun convertMillisToDate(millis: Long): String {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    return formatter.format(Date(millis))
 }

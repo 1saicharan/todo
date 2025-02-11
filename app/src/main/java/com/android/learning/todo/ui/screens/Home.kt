@@ -19,6 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.android.learning.todo.data.Task
 import com.android.learning.todo.data.room.TaskDao
 import com.android.learning.todo.data.toTaskEntity
@@ -29,7 +31,7 @@ import kotlinx.coroutines.withContext
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList(),taskDao: TaskDao) {
+fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList(),taskDao: TaskDao,navController: NavHostController) {
     var description by remember { mutableStateOf("") }
     var listOfItems by remember { mutableStateOf(listOfItems) }
     val focusManager = LocalFocusManager.current // Manages focus
@@ -64,6 +66,7 @@ fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList
               TodoItem(title = item.description)
             }
         }
+        Button(onClick = {navController.navigate("datepicker")}) { Text("Date Picker") }
     }
 
 }
