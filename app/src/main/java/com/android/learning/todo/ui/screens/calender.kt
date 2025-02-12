@@ -12,21 +12,28 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalenderScreen() {
+fun CalenderScreen(onDateSelected: (String) -> Unit = {}) {
     val datePickerState = rememberDatePickerState()
     val selectedDate = datePickerState.selectedDateMillis?.let {
         convertMillisToDate(it)
     } ?: ""
+    LaunchedEffect(selectedDate) {
+        if (selectedDate.isNotEmpty()) {
+            onDateSelected(selectedDate)
+        }
+    }
     Box(modifier = Modifier.fillMaxWidth().offset(y = 64.dp)
         .shadow(elevation = 4.dp)
         .background(MaterialTheme.colorScheme.surface)

@@ -59,7 +59,7 @@ fun AppNavigation(userDao: UserDao,taskDao: TaskDao){
         composable("login") { LoginScreen(userDao = userDao, navController = navController  ) }
         composable(route = "signup") { SignUpScreen(userDao = userDao, navController = navController) }
         composable(route = "home") { HomeScreen(taskDao = taskDao, listOfItems = getListOfTasks(taskDao),navController = navController) }
-        composable(route = "datepicker") { CalenderScreen() }
+        composable(route = "datepicker") { CalenderScreen(){dateSelected -> navController.navigate("home") } }
     }
 }
 
