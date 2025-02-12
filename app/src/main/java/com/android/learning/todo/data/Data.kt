@@ -7,7 +7,7 @@ data class Task constructor(
     val taskId: Int = 0,
     val title: String = "",
     val description: String = "",
-//    val dueDate: LocalDate ,
+    val dueDate: LocalDate = LocalDate.now(),
     val isCompleted: Boolean = false,
 )
 

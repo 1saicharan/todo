@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 
-@Database(entities = [TaskEntity::class, UserEntity::class], version = 1)
-//@TypeConverters(DateConverter::class)
+@Database(entities = [TaskEntity::class, UserEntity::class], version = 2, exportSchema = false)
+@TypeConverters(DateConverter::class)
 abstract class TodoDatabase: RoomDatabase() {
 
     companion object{
@@ -23,7 +24,6 @@ abstract class TodoDatabase: RoomDatabase() {
                     TodoDatabase::class.java,
                     DATABASE_NAME
                 )
-//                    .addTypeConverter(DateConverter)
                     .build()
                 INSTANCE = instance
                 instance
