@@ -64,7 +64,7 @@ fun LoginScreen(modifier: Modifier = Modifier,userDao: UserDao,navController:Nav
 
 private fun login(userDao: UserDao, username: String, password: String, navController: NavHostController) {
     CoroutineScope(Dispatchers.Default).launch {
-        if(userDao.isUserExists(username)){
+        if(userDao.isUserExists(username) && userDao.login(username,password)){
             withContext(Dispatchers.Main){
                 navController.navigate("home")
             }

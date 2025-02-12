@@ -52,7 +52,7 @@ fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList
             )
             Button(onClick = { if(description.isNotBlank()){
                 runBlocking {  withContext(Dispatchers.IO) {
-                    taskDao.insertTask(Task(description = description).toTaskEntity())
+                    taskDao.insertTask(Task(description = description).toTaskEntity(),)
                     listOfItems = listOfItems + Task(description = description)
                 }}
                 description = ""
