@@ -28,11 +28,12 @@ import com.android.learning.todo.ui.components.TodoItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList(),taskDao: TaskDao,navController: NavHostController) {
-    var description by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf("") }
     var listOfItems by remember { mutableStateOf(listOfItems) }
     val focusManager = LocalFocusManager.current // Manages focus
 
@@ -45,17 +46,17 @@ fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList
         .imePadding()) {
         Row() {
             TextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("title") },
                 modifier = Modifier.padding(5.dp),
             )
-            Button(onClick = { if(description.isNotBlank()){
+            Button(onClick = { if(title.isNotBlank()){
                 runBlocking {  withContext(Dispatchers.IO) {
-                    taskDao.insertTask(Task(description = description).toTaskEntity(),)
-                    listOfItems = listOfItems + Task(description = description)
+                    taskDao.insertTask(Task(title = title).toTaskEntity(),)
+                    listOfItems = listOfItems + Task(title = title)
                 }}
-                description = ""
+                title = ""
             } }, modifier = Modifier.padding(5.dp),) {
                 Text("Add")
             }
@@ -63,7 +64,7 @@ fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList
         }
         LazyColumn(modifier = Modifier.weight(1f).padding((5.dp))) {
             items(listOfItems) { item ->
-              TodoItem(title = item.description)
+              TodoItem(task = item,taskDao = taskDao)
             }
         }
         Button(onClick = {navController.navigate("datepicker")}) { Text("Date Picker") }

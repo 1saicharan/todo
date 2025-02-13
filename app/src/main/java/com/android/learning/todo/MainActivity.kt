@@ -24,9 +24,7 @@ import com.android.learning.todo.ui.screens.LoginScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
 import com.android.learning.todo.ui.theme.TodoTheme
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.math.tan
 
 class MainActivity : ComponentActivity() {
     private val database by lazy { TodoDatabase.getDatabase(context = applicationContext) }
