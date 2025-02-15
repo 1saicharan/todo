@@ -31,9 +31,9 @@ import java.time.LocalDate
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,navController: NavHostController) {
+fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,navController: NavHostController,date: LocalDate) {
     var title by remember { mutableStateOf("") }
-    val listOfItems by taskViewModel.tasks.collectAsState()
+    val listOfItems by taskViewModel.getTasks(dueDate = date).collectAsState(initial = emptyList())
     val focusManager = LocalFocusManager.current // Manages focus
 
     LaunchedEffect(Unit) {
@@ -52,7 +52,7 @@ fun HomeScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,navCon
             )
             Button(onClick = { if(title.isNotBlank()){
                 runBlocking {  withContext(Dispatchers.IO) {
-                    taskViewModel.insertTask(Task(title = title, dueDate = LocalDate.now()),)
+                    taskViewModel.insertTask(Task(title = title, dueDate = date),)
                 }}
                 title = ""
             } }, modifier = Modifier.padding(5.dp),) {

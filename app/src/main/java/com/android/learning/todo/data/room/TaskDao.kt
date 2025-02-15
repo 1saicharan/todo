@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface TaskDao {
@@ -16,9 +17,14 @@ interface TaskDao {
     fun deleteTask(task: TaskEntity)
 
     @Query("SELECT * FROM tasks")
-    fun getTasks(): Flow<List<TaskEntity>>
+    fun getAllTasks(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM tasks WHERE dueDate = :dueDate")
+    fun getTasks(dueDate: LocalDate): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE taskId = :id")
     fun getTask(id: Int): TaskEntity?
+
+
 
 }

@@ -14,14 +14,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class TaskViewModel(private val taskDao: TaskDao):ViewModel() {
 
-    val tasks:StateFlow<List<Task>>  = getTasks().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = emptyList()
-    )
 
 
     fun insertTask(task: Task){
@@ -37,8 +33,8 @@ class TaskViewModel(private val taskDao: TaskDao):ViewModel() {
         }
     }
 
-    fun getTasks():Flow<List<Task>>{
-        return taskDao.getTasks().map { it.map { it.toTask() } }.flowOn(Dispatchers.IO)
+    fun getTasks(dueDate: LocalDate):Flow<List<Task>>{
+        return taskDao.getTasks(dueDate).map { it.map { it.toTask() } }.flowOn(Dispatchers.IO)
     }
 
 }

@@ -1,5 +1,6 @@
 package com.android.learning.todo
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,14 +23,15 @@ import com.android.learning.todo.data.room.TodoDatabase
 import com.android.learning.todo.data.room.UserDao
 import com.android.learning.todo.data.toTask
 import com.android.learning.todo.ui.screens.CalenderScreen
-import com.android.learning.todo.ui.screens.HomeScreen
 import com.android.learning.todo.ui.screens.LoginScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
+import com.android.learning.todo.ui.screens.TodoListScreen
 import com.android.learning.todo.ui.theme.TodoTheme
 import com.android.learning.todo.viewmodels.TaskViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
     private val database by lazy { TodoDatabase.getDatabase(context = applicationContext) }
@@ -37,12 +42,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val isLoggedIn = remember { mutableStateOf(checkLoginState()) }
             TodoTheme {
                 Scaffold() { innerPadding ->
                     Column ( modifier = Modifier.fillMaxSize()
                         .padding(paddingValues = innerPadding)
                     ){
-                        AppNavigation(userDao = userDao, taskViewModel = taskViewModel)
+                        AppNavigation(userDao = userDao, taskViewModel = taskViewModel,isLoggedIn = isLoggedIn)
                     }
 
                 }
@@ -50,17 +56,26 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    private fun checkLoginState(): Boolean {
+        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        return sharedPref.getBoolean("isLoggedIn", false)
+    }
 }
 
 @Composable
-fun AppNavigation(userDao: UserDao,taskViewModel: TaskViewModel){
+fun AppNavigation(userDao: UserDao,taskViewModel: TaskViewModel,isLoggedIn:MutableState<Boolean>) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = if(!isLoggedIn.value) "login" else "todolistscreen/${LocalDate.now()}") {
 
-        composable("login") { LoginScreen(userDao = userDao, navController = navController  ) }
+        composable("login") { LoginScreen(userDao = userDao, navController = navController,isLoggedIn = isLoggedIn  ) }
         composable(route = "signup") { SignUpScreen(userDao = userDao, navController = navController) }
-        composable(route = "home") { HomeScreen(taskViewModel = taskViewModel, navController = navController) }
-        composable(route = "datepicker") { CalenderScreen(){dateSelected -> navController.navigate("home") } }
+        composable(route = "todolistscreen/{date}") { backStackEntry ->
+                    val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))?: LocalDate.now()
+                    TodoListScreen(taskViewModel = taskViewModel, navController = navController, date = date)
+                }
+        composable(route = "datepicker") { CalenderScreen(navHostController = navController) }
     }
 }
+
+
 

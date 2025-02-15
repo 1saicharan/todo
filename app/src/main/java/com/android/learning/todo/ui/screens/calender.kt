@@ -1,5 +1,6 @@
 package com.android.learning.todo.ui.screens
 
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -15,22 +16,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalenderScreen(onDateSelected: (String) -> Unit = {}) {
+fun CalenderScreen(navHostController: NavHostController) {
     val datePickerState = rememberDatePickerState()
     val selectedDate = datePickerState.selectedDateMillis?.let {
         convertMillisToDate(it)
     } ?: ""
     LaunchedEffect(selectedDate) {
         if (selectedDate.isNotEmpty()) {
-            onDateSelected(selectedDate)
+            val enCodedSelectedDate = Uri.encode(selectedDate)
+            navHostController.navigate("todolistscreen/${enCodedSelectedDate}")
         }
     }
     Box(modifier = Modifier.fillMaxWidth().offset(y = 64.dp)
@@ -47,12 +49,6 @@ fun CalenderScreen(onDateSelected: (String) -> Unit = {}) {
 
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun DateButtonPreview(){
-    CalenderScreen()
-}
 
 fun convertMillisToDate(millis: Long): String {
     val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())

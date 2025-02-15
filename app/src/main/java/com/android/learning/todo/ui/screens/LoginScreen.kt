@@ -1,5 +1,7 @@
 package com.android.learning.todo.ui.screens
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,6 +12,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +32,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 //@Preview(showBackground = true, widthDp = 360, heightDp = 640)
 //@Composable
@@ -36,7 +41,8 @@ import kotlinx.coroutines.withContext
 //}
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier,userDao: UserDao,navController:NavHostController) {
+fun LoginScreen(modifier: Modifier = Modifier,userDao: UserDao,navController:NavHostController,isLoggedIn:MutableState<Boolean>) {
+    val context = navController.context
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(modifier = modifier.fillMaxHeight()) {
@@ -55,19 +61,35 @@ fun LoginScreen(modifier: Modifier = Modifier,userDao: UserDao,navController:Nav
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(),
         )
-        FilledIconButton(onClick = { login(userDao = userDao,username = username,password = password,navController = navController)},modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp, vertical = 1.dp), content = { Text("Login") })
+        FilledIconButton(onClick = { login(userDao = userDao,username = username,password = password,navController = navController,isLoggedIn  =  isLoggedIn,context)},modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp, vertical = 1.dp), content = { Text("Login") })
         FilledTonalIconButton(onClick = { navController.navigate("signup") },modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp, vertical = 1.dp), content = { Text("Signup") })
         Spacer(modifier.weight(2f))
 
     }
 }
 
-private fun login(userDao: UserDao, username: String, password: String, navController: NavHostController) {
+private fun login(userDao: UserDao, username: String, password: String, navController: NavHostController,isLoggedIn: MutableState<Boolean>,context: Context) {
+    val enCodedtodayDate = Uri.encode(LocalDate.now().toString())
     CoroutineScope(Dispatchers.Default).launch {
         if(userDao.isUserExists(username) && userDao.login(username,password)){
+            isLoggedIn.value = true
+            saveLoginState(isLoggedIn = isLoggedIn.value,context = context)
             withContext(Dispatchers.Main){
-                navController.navigate("home")
+                navController.navigate("todolistscreen/${enCodedtodayDate}"){
+                    popUpTo("login"){
+                        inclusive = true
+                    }
+                }
             }
         }
     }
+}
+
+fun saveLoginState(isLoggedIn: Boolean,context: Context) {
+    val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    with(sharedPref.edit()) {
+        putBoolean("isLoggedIn", isLoggedIn)
+        apply()
+    }
+
 }
