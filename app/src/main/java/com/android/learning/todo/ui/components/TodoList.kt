@@ -24,14 +24,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.android.learning.todo.data.Task
 import com.android.learning.todo.data.room.TaskDao
-import com.android.learning.todo.data.toTaskEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+
 
 
 @Composable
-fun TodoItem(modifier: Modifier = Modifier,task: Task,taskDao: TaskDao) {
+fun TodoItem(modifier: Modifier = Modifier,task: Task,onDelete : () -> Unit) {
     var checked by remember { mutableStateOf(false) }
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically){
         Checkbox(checked = checked, onCheckedChange = { checked = it })
@@ -41,8 +38,7 @@ fun TodoItem(modifier: Modifier = Modifier,task: Task,taskDao: TaskDao) {
             contentDescription = "delete",
             modifier = Modifier
                 .clickable {
-                    CoroutineScope(Dispatchers.Default).launch{
-                        taskDao.deleteTask(task.toTaskEntity())}
+                    onDelete()
                 }
 
         )

@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,12 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.android.learning.todo.data.Task
-import com.android.learning.todo.data.room.TaskDao
-import com.android.learning.todo.data.toTaskEntity
 import com.android.learning.todo.ui.components.TodoItem
+import com.android.learning.todo.viewmodels.TaskViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -32,9 +31,9 @@ import java.time.LocalDate
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList(),taskDao: TaskDao,navController: NavHostController) {
+fun HomeScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,navController: NavHostController) {
     var title by remember { mutableStateOf("") }
-    var listOfItems by remember { mutableStateOf(listOfItems) }
+    val listOfItems by taskViewModel.tasks.collectAsState()
     val focusManager = LocalFocusManager.current // Manages focus
 
     LaunchedEffect(Unit) {
@@ -53,8 +52,7 @@ fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList
             )
             Button(onClick = { if(title.isNotBlank()){
                 runBlocking {  withContext(Dispatchers.IO) {
-                    taskDao.insertTask(Task(title = title).toTaskEntity(),)
-                    listOfItems = listOfItems + Task(title = title)
+                    taskViewModel.insertTask(Task(title = title, dueDate = LocalDate.now()),)
                 }}
                 title = ""
             } }, modifier = Modifier.padding(5.dp),) {
@@ -64,7 +62,7 @@ fun HomeScreen(modifier: Modifier = Modifier,listOfItems: List<Task> = emptyList
         }
         LazyColumn(modifier = Modifier.weight(1f).padding((5.dp))) {
             items(listOfItems) { item ->
-              TodoItem(task = item,taskDao = taskDao)
+              TodoItem(task = item, onDelete = {taskViewModel.deleteTask(task = item)})
             }
         }
         Button(onClick = {navController.navigate("datepicker")}) { Text("Date Picker") }

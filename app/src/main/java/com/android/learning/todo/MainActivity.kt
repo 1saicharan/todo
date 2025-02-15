@@ -23,13 +23,16 @@ import com.android.learning.todo.ui.screens.HomeScreen
 import com.android.learning.todo.ui.screens.LoginScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
 import com.android.learning.todo.ui.theme.TodoTheme
+import com.android.learning.todo.viewmodels.TaskViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     private val database by lazy { TodoDatabase.getDatabase(context = applicationContext) }
     private val userDao by lazy { database.userDao() }
     private val taskDao by lazy { database.taskDao() }
+    private val taskViewModel by lazy { TaskViewModel(taskDao = taskDao) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -39,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     Column ( modifier = Modifier.fillMaxSize()
                         .padding(paddingValues = innerPadding)
                     ){
-                        AppNavigation(userDao = userDao,taskDao = taskDao)
+                        AppNavigation(userDao = userDao, taskViewModel = taskViewModel)
                     }
 
                 }
@@ -50,19 +53,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(userDao: UserDao,taskDao: TaskDao){
+fun AppNavigation(userDao: UserDao,taskViewModel: TaskViewModel){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "login") {
 
         composable("login") { LoginScreen(userDao = userDao, navController = navController  ) }
         composable(route = "signup") { SignUpScreen(userDao = userDao, navController = navController) }
-        composable(route = "home") { HomeScreen(taskDao = taskDao, listOfItems = getListOfTasks(taskDao),navController = navController) }
+        composable(route = "home") { HomeScreen(taskViewModel = taskViewModel, navController = navController) }
         composable(route = "datepicker") { CalenderScreen(){dateSelected -> navController.navigate("home") } }
     }
 }
 
-private fun getListOfTasks(taskDao: TaskDao): List<Task> {
-    return runBlocking(Dispatchers.IO) {
-        taskDao.getTasks()?.map { it.toTask() } ?: emptyList()
-    }
-}
