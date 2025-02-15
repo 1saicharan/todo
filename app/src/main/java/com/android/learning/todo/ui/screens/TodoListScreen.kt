@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -43,6 +44,7 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
         .padding(5.dp)
         .fillMaxHeight()
         .imePadding()) {
+        Text(text = "Tasks for date: $date", modifier = Modifier.padding(7.dp), style = MaterialTheme.typography.headlineMedium)
         Row() {
             TextField(
                 value = title,
@@ -65,7 +67,8 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
               TodoItem(task = item, onDelete = {taskViewModel.deleteTask(task = item)})
             }
         }
-        Button(onClick = {navController.navigate("datepicker")}) { Text("Date Picker") }
+        Button(onClick = {navController.navigate("datepicker"){
+        } }) { Text("Date Picker") }
     }
 
 }

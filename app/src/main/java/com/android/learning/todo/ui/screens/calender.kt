@@ -1,8 +1,6 @@
 package com.android.learning.todo.ui.screens
 
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +17,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -31,7 +31,9 @@ fun CalenderScreen(navHostController: NavHostController) {
     } ?: ""
     LaunchedEffect(selectedDate) {
         if (selectedDate.isNotEmpty()) {
-            val enCodedSelectedDate = Uri.encode(selectedDate)
+            val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+            val formatedSelectedDate = LocalDate.parse(selectedDate, formatter).toString()
+            val enCodedSelectedDate = Uri.encode(formatedSelectedDate)
             navHostController.navigate("todolistscreen/${enCodedSelectedDate}")
         }
     }
