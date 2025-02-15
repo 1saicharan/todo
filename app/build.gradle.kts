@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.livedata)
     implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.compose.material)
 
     // Calendar Library (Choose one)
 //     implementation(libs.material.calendarview)

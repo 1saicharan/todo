@@ -5,8 +5,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import com.android.learning.todo.data.room.TaskDao
 import com.android.learning.todo.data.room.TodoDatabase
 import com.android.learning.todo.data.room.UserDao
 import com.android.learning.todo.data.toTask
+import com.android.learning.todo.ui.BottomNavigationBar
 import com.android.learning.todo.ui.screens.CalenderScreen
 import com.android.learning.todo.ui.screens.LoginScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
@@ -43,15 +46,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val isLoggedIn = remember { mutableStateOf(checkLoginState()) }
-            TodoTheme {
-                Scaffold() { innerPadding ->
-                    Column ( modifier = Modifier.fillMaxSize()
-                        .padding(paddingValues = innerPadding)
-                    ){
-                        AppNavigation(userDao = userDao, taskViewModel = taskViewModel,isLoggedIn = isLoggedIn)
-                    }
 
-                }
+            TodoTheme {
+
+                AppNavigation(userDao = userDao, taskViewModel = taskViewModel,isLoggedIn = isLoggedIn)
+
+
+
 
             }
         }
@@ -65,15 +66,40 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation(userDao: UserDao,taskViewModel: TaskViewModel,isLoggedIn:MutableState<Boolean>) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = if(!isLoggedIn.value) "login" else "todolistscreen/${LocalDate.now()}") {
+    Scaffold( bottomBar = {if(isLoggedIn.value)BottomNavigationBar(navController)},
+        modifier = Modifier.navigationBarsPadding()) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            NavHost(
+                navController = navController,
+                startDestination = if (!isLoggedIn.value) "login" else "todolistscreen/${LocalDate.now()}",
+            ) {
 
-        composable("login") { LoginScreen(userDao = userDao, navController = navController,isLoggedIn = isLoggedIn  ) }
-        composable(route = "signup") { SignUpScreen(userDao = userDao, navController = navController) }
-        composable(route = "todolistscreen/{date}") { backStackEntry ->
-                    val date = LocalDate.parse(backStackEntry.arguments?.getString("date"))?: LocalDate.now()
-                    TodoListScreen(taskViewModel = taskViewModel, navController = navController, date = date)
+                composable("login") {
+                    LoginScreen(
+                        userDao = userDao,
+                        navController = navController,
+                        isLoggedIn = isLoggedIn
+                    )
                 }
-        composable(route = "datepicker") { CalenderScreen(navHostController = navController) }
+                composable(route = "signup") {
+                    SignUpScreen(
+                        userDao = userDao,
+                        navController = navController
+                    )
+                }
+                composable(route = "todolistscreen/{date}") { backStackEntry ->
+                    val date =
+                        LocalDate.parse(backStackEntry.arguments?.getString("date"))
+                            ?: LocalDate.now()
+                    TodoListScreen(
+                        taskViewModel = taskViewModel,
+                        navController = navController,
+                        date = date
+                    )
+                }
+                composable(route = "datepicker") { CalenderScreen(navHostController = navController) }
+            }
+        }
     }
 }
 

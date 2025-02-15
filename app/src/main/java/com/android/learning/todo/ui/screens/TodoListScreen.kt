@@ -7,7 +7,10 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -58,7 +61,7 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
                 }}
                 title = ""
             } }, modifier = Modifier.padding(5.dp),) {
-                Text("Add")
+                Icon(Icons.Filled.Add, contentDescription = "Add")
             }
 
         }
@@ -67,8 +70,6 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
               TodoItem(task = item, onDelete = {taskViewModel.deleteTask(task = item)})
             }
         }
-        Button(onClick = {navController.navigate("datepicker"){
-        } }) { Text("Date Picker") }
     }
 
 }
