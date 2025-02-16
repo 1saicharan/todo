@@ -18,6 +18,9 @@ interface UserDao {
     @Query("SELECT userId FROM users WHERE username = :username AND password = :password")
     fun getUserId(username: String,password: String): Int
 
+    @Query("SELECT * FROM users WHERE userId = :userId")
+    fun getUserById(userId:Int):UserEntity
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(user: UserEntity)
 

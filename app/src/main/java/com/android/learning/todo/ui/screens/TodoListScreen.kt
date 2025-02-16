@@ -1,6 +1,7 @@
 package com.android.learning.todo.ui.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -46,6 +47,9 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
 
     LaunchedEffect(Unit) {
         focusManager.clearFocus() // Clears focus when screen opens
+    }
+    LaunchedEffect(userId) {
+        Log.d("UserID_Debug", "User ID Updated in UI: $userId")
     }
     Column(modifier = modifier
         .padding(6.dp)

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,17 +24,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.learning.todo.data.Task
+import com.android.learning.todo.data.User
 import com.android.learning.todo.data.room.TaskDao
 import com.android.learning.todo.data.room.TodoDatabase
 import com.android.learning.todo.data.room.UserDao
 import com.android.learning.todo.data.toTask
+import com.android.learning.todo.data.toUser
 import com.android.learning.todo.ui.BottomNavigationBar
 import com.android.learning.todo.ui.screens.CalenderScreen
 import com.android.learning.todo.ui.screens.LoginScreen
+import com.android.learning.todo.ui.screens.ProfileScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
 import com.android.learning.todo.ui.screens.TodoListScreen
 import com.android.learning.todo.ui.theme.TodoTheme
 import com.android.learning.todo.viewmodels.TaskViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
@@ -47,7 +52,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        updateUserId(taskViewModel)
+        val userId:Int = updateUserId(taskViewModel)
         setContent {
             val isLoggedIn = remember { mutableStateOf(checkLoginState()) }
 
@@ -66,7 +71,7 @@ class MainActivity : ComponentActivity() {
         Log.d("LoginState_Debug", "Retrieved Login State from SharedPreferences: ${sharedPref.getBoolean("isLoggedIn", false)}") // Debug log
         return sharedPref.getBoolean("isLoggedIn", false)
     }
-    private fun updateUserId(taskViewModel: TaskViewModel) {
+    private fun updateUserId(taskViewModel: TaskViewModel): Int {
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("userId", -1)
 
@@ -78,6 +83,7 @@ class MainActivity : ComponentActivity() {
         } else {
             Log.e("UserID_Debug", "User ID not found in SharedPreferences")
         }
+        return userId
     }
 
 }
@@ -116,6 +122,10 @@ fun AppNavigation(userDao: UserDao,taskViewModel: TaskViewModel,isLoggedIn:Mutab
                         navController = navController,
                         date = date
                     )
+                }
+                composable(route = "profile") {
+                    val userId by taskViewModel.userId.collectAsState()
+                    ProfileScreen(userId = userId ,navController = navController,userDao = userDao)
                 }
             }
         }
