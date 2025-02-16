@@ -13,7 +13,8 @@ data class TaskEntity @RequiresApi(Build.VERSION_CODES.O) constructor(
     val title: String,
     val description: String = "",
     val dueDate: LocalDate = LocalDate.now(),
-    var isCompleted: Boolean = false
+    var isCompleted: Boolean = false,
+    val userId: Int
 )
 
 @Entity(tableName = "users")

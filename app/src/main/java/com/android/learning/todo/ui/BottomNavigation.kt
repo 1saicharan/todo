@@ -22,7 +22,6 @@ import java.time.LocalDate
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         Screens.Tasks,
-        Screens.Calendar,
         Screens.Profile
     )
 
@@ -59,8 +58,7 @@ fun currentRoute(navController: NavController): String? {
 }
 
 sealed class Screens(val route: String, val title: String, val icon: ImageVector) {
-    object Tasks : Screens("todolistscreen/{date}", "Tasks", Icons.AutoMirrored.Filled.List)
-    object Calendar : Screens("datepicker", "Calendar", Icons.Default.DateRange)
+    object Tasks : Screens("todolistscreen/${LocalDate.now()}", "Tasks", Icons.AutoMirrored.Filled.List)
     object Profile : Screens("profile", "Profile", Icons.Default.Person)
 }
 

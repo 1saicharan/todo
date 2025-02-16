@@ -9,6 +9,7 @@ data class Task constructor(
     val description: String = "",
     val dueDate: LocalDate = LocalDate.now(),
     val isCompleted: Boolean = false,
+    val userId: Int
 )
 
 data class User(

@@ -19,8 +19,8 @@ interface TaskDao {
     @Query("SELECT * FROM tasks")
     fun getAllTasks(): Flow<List<TaskEntity>>
 
-    @Query("SELECT * FROM tasks WHERE dueDate = :dueDate")
-    fun getTasks(dueDate: LocalDate): Flow<List<TaskEntity>>
+    @Query("SELECT * FROM tasks WHERE dueDate = :dueDate AND userId = :userId")
+    fun getTasks(dueDate: LocalDate,userId:Int): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE taskId = :id")
     fun getTask(id: Int): TaskEntity?

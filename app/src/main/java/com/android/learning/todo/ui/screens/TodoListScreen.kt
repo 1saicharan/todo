@@ -1,5 +1,6 @@
 package com.android.learning.todo.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.android.learning.todo.data.Task
@@ -37,27 +39,31 @@ import java.time.LocalDate
 @Composable
 fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,navController: NavHostController,date: LocalDate) {
     var title by remember { mutableStateOf("") }
+    val userId by taskViewModel.userId.collectAsState()
     val listOfItems by taskViewModel.getTasks(dueDate = date).collectAsState(initial = emptyList())
+
     val focusManager = LocalFocusManager.current // Manages focus
 
     LaunchedEffect(Unit) {
         focusManager.clearFocus() // Clears focus when screen opens
     }
     Column(modifier = modifier
-        .padding(5.dp)
+        .padding(6.dp)
         .fillMaxHeight()
         .imePadding()) {
-        Text(text = "Tasks for date: $date", modifier = Modifier.padding(7.dp), style = MaterialTheme.typography.headlineMedium)
+        CalenderScreen(
+            navController = navController,
+        )
         Row() {
             TextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("title") },
+                label = { Text("Title") },
                 modifier = Modifier.padding(5.dp),
             )
             Button(onClick = { if(title.isNotBlank()){
                 runBlocking {  withContext(Dispatchers.IO) {
-                    taskViewModel.insertTask(Task(title = title, dueDate = date),)
+                    taskViewModel.insertTask(Task(title = title, dueDate = date, userId = userId!!),)
                 }}
                 title = ""
             } }, modifier = Modifier.padding(5.dp),) {
@@ -65,6 +71,7 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
             }
 
         }
+        Text(text = "Tasks for date - $date", modifier = Modifier.padding(10.dp), style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Justify)
         LazyColumn(modifier = Modifier.weight(1f).padding((5.dp))) {
             items(listOfItems) { item ->
               TodoItem(task = item, onDelete = {taskViewModel.deleteTask(task = item)})
@@ -73,3 +80,4 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
     }
 
 }
+
