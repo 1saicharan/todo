@@ -6,6 +6,7 @@ import com.android.learning.todo.data.Task
 import com.android.learning.todo.data.room.TaskDao
 import com.android.learning.todo.data.toTask
 import com.android.learning.todo.data.toTaskEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
+@HiltViewModel
 class TaskViewModel @Inject constructor(private val taskDao: TaskDao) : ViewModel() {
 
     private val _userId = MutableStateFlow<Int?>(null)  // Store the logged-in user ID

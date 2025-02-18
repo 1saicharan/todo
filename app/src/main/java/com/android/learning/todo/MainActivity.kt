@@ -43,8 +43,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var userDao: UserDao
 
-    @Inject
-    lateinit var taskViewModel:TaskViewModel
+    private val taskViewModel:TaskViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
