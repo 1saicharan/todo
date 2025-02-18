@@ -5,7 +5,9 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import javax.inject.Singleton
 
+@Singleton
 @Dao
 interface UserDao {
 

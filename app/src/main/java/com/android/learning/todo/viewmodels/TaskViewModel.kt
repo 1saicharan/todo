@@ -17,8 +17,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import javax.inject.Inject
 
-class TaskViewModel(private val taskDao: TaskDao):ViewModel() {
+class TaskViewModel @Inject constructor(private val taskDao: TaskDao) : ViewModel() {
 
     private val _userId = MutableStateFlow<Int?>(null)  // Store the logged-in user ID
     val userId: StateFlow<Int?> = _userId.asStateFlow()
@@ -28,23 +29,22 @@ class TaskViewModel(private val taskDao: TaskDao):ViewModel() {
     }
 
 
-
-    fun insertTask(task: Task){
+    fun insertTask(task: Task) {
         viewModelScope.launch(Dispatchers.IO) {
             taskDao.insertTask(task.toTaskEntity())
         }
 
     }
 
-    fun deleteTask(task: Task){
+    fun deleteTask(task: Task) {
         viewModelScope.launch(Dispatchers.IO) {
             taskDao.deleteTask(task.toTaskEntity())
         }
     }
 
-    fun getTasks(dueDate: LocalDate):Flow<List<Task>>{
+    fun getTasks(dueDate: LocalDate): Flow<List<Task>> {
         return _userId.filterNotNull().flatMapLatest { userId ->
-            taskDao.getTasks(dueDate,userId).map { it.map { it.toTask() } }
+            taskDao.getTasks(dueDate, userId).map { it.map { it.toTask() } }
         }.flowOn(Dispatchers.IO)
     }
 

@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavHostController
-import com.android.learning.todo.MainActivity
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -58,7 +57,7 @@ fun CalenderScreen(navController: NavHostController) {
         OutlinedTextField(
             value = selectedDate,
             onValueChange = { },
-            label = { Text("Select date for tasks") },
+            label = { Text("Select date for tasks" ) },
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { showDatePicker = !showDatePicker }) {
@@ -87,7 +86,7 @@ fun CalenderScreen(navController: NavHostController) {
                 ) {
                     DatePicker(
                         state = datePickerState,
-                        showModeToggle = false
+                        showModeToggle = true
                     )
                 }
             }

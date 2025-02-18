@@ -6,7 +6,9 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+import javax.inject.Singleton
 
+@Singleton
 @Dao
 interface TaskDao {
 

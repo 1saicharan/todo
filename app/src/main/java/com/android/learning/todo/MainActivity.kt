@@ -6,9 +6,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -18,59 +17,69 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.android.learning.todo.data.Task
-import com.android.learning.todo.data.User
 import com.android.learning.todo.data.room.TaskDao
 import com.android.learning.todo.data.room.TodoDatabase
 import com.android.learning.todo.data.room.UserDao
-import com.android.learning.todo.data.toTask
-import com.android.learning.todo.data.toUser
 import com.android.learning.todo.ui.BottomNavigationBar
-import com.android.learning.todo.ui.screens.CalenderScreen
 import com.android.learning.todo.ui.screens.LoginScreen
 import com.android.learning.todo.ui.screens.ProfileScreen
 import com.android.learning.todo.ui.screens.SignUpScreen
 import com.android.learning.todo.ui.screens.TodoListScreen
 import com.android.learning.todo.ui.theme.TodoTheme
 import com.android.learning.todo.viewmodels.TaskViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val database by lazy { TodoDatabase.getDatabase(context = applicationContext) }
-    private val userDao by lazy { database.userDao() }
-    private val taskDao by lazy { database.taskDao() }
-    private val taskViewModel by lazy { TaskViewModel(taskDao = taskDao) }
+
+
+    @Inject
+    lateinit var userDao: UserDao
+
+    @Inject
+    lateinit var taskViewModel:TaskViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val userId:Int = updateUserId(taskViewModel)
+        val userId: Int = updateUserId(taskViewModel)
         setContent {
             val isLoggedIn = remember { mutableStateOf(checkLoginState()) }
 
             TodoTheme {
 
-                AppNavigation(userDao = userDao, taskViewModel = taskViewModel,isLoggedIn = isLoggedIn)
-
-
+                AppNavigation(
+                    userDao = userDao,
+                    taskViewModel = taskViewModel,
+                    isLoggedIn = isLoggedIn
+                )
 
 
             }
         }
     }
+
     private fun checkLoginState(): Boolean {
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        Log.d("LoginState_Debug", "Retrieved Login State from SharedPreferences: ${sharedPref.getBoolean("isLoggedIn", false)}") // Debug log
+        Log.d(
+            "LoginState_Debug",
+            "Retrieved Login State from SharedPreferences: ${
+                sharedPref.getBoolean(
+                    "isLoggedIn",
+                    false
+                )
+            }"
+        ) // Debug log
         return sharedPref.getBoolean("isLoggedIn", false)
     }
+
     private fun updateUserId(taskViewModel: TaskViewModel): Int {
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("userId", -1)
@@ -89,10 +98,16 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(userDao: UserDao,taskViewModel: TaskViewModel,isLoggedIn:MutableState<Boolean>) {
+fun AppNavigation(
+    userDao: UserDao,
+    taskViewModel: TaskViewModel,
+    isLoggedIn: MutableState<Boolean>
+) {
     val navController = rememberNavController()
-    Scaffold( bottomBar = {if(isLoggedIn.value)BottomNavigationBar(navController)},
-        modifier = Modifier.navigationBarsPadding()) { innerPadding ->
+    Scaffold(
+        bottomBar = { if (isLoggedIn.value) BottomNavigationBar(navController) },
+        modifier = Modifier.navigationBarsPadding()
+    ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             NavHost(
                 navController = navController,
@@ -125,7 +140,7 @@ fun AppNavigation(userDao: UserDao,taskViewModel: TaskViewModel,isLoggedIn:Mutab
                 }
                 composable(route = "profile") {
                     val userId by taskViewModel.userId.collectAsState()
-                    ProfileScreen(userId = userId ,navController = navController,userDao = userDao)
+                    ProfileScreen(userId = userId, navController = navController, userDao = userDao)
                 }
             }
         }
