@@ -54,13 +54,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.ui)
 
@@ -85,4 +78,23 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.core) 
     implementation(libs.kotlinx.coroutines.android)
+
+    // for testing
+    // Required -- JUnit 4 framework
+    testImplementation(libs.junit)
+    // Optional -- Robolectric environment
+    testImplementation(libs.androidx.test.core)
+    // Optional -- Mockito framework
+    testImplementation(libs.mockito.core)
+    // Optional -- mockito-kotlin
+    testImplementation(libs.mockito.kotlin)
+    // Optional -- Mockk framework
+    testImplementation(libs.mockk)
+
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }

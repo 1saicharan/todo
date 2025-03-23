@@ -52,7 +52,7 @@ fun TodoListScreen(modifier: Modifier = Modifier,taskViewModel: TaskViewModel,na
         Log.d("UserID_Debug", "User ID Updated in UI: $userId")
     }
     Column(modifier = modifier
-        .padding(6.dp)
+        .padding(10.dp)
         .fillMaxHeight()
         .imePadding()) {
         CalenderScreen(
